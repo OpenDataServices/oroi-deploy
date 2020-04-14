@@ -1,0 +1,101 @@
+version: "3.5"
+
+services:
+  datastore:
+    image: postgres:11.4
+    volumes:
+      - "./_build/datastore:/var/lib/postgresql/data"
+      - "./import:/import"
+    environment:
+      POSTGRES_USER: datastore
+      POSTGRES_PASSWORD: datastore
+
+  redis:
+    image: redis:alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - "./_build/redis-data:/data"
+
+  worker:
+    image: opendataservices/oroi-scrape:dev
+    command: memorious process
+    links:
+      - redis
+      - datastore
+    volumes:
+      - "./_build/data:/data"
+    environment:
+      MEMORIOUS_BASE_PATH: /data
+      MEMORIOUS_CONFIG_PATH: /oroi-scrape/config
+      MEMORIOUS_DEBUG: 'true'
+      ARCHIVE_PATH: /data/archive
+      REDIS_URL: redis://redis:6379/0
+      MEMORIOUS_DATASTORE_URI: postgresql://datastore:datastore@datastore/datastore
+    tmpfs:
+      - "/tmp"
+
+#  ui:
+#    image: opendataservices/oroi-scrape:dev
+#    command: gunicorn -t 900 -w 4 -b 0.0.0.0:8000 --log-level info --log-file - memorious.ui.views:app
+#    links:
+#      - redis
+#      - datastore
+#    volumes:
+#      - "./_build/data:/data"
+#    environment:
+#      MEMORIOUS_CONFIG_PATH: /oroi-scrape/config
+#      ARCHIVE_PATH: /data/archive
+#    tmpfs:
+#      - "/tmp"
+#    ports:
+#      - "8000:8000"
+      
+  django_db:
+    image: postgres:11.4
+    volumes:
+      - "./_build/django_db:/var/lib/postgresql/data"
+    environment:
+      POSTGRES_USER: django_db
+      POSTGRES_PASSWORD: django_db
+ 
+#  load_scrape_data:
+#    image: opendataservices/open-register-of-interests
+#    command: python /code/oroi/manage.py load_scrape_data postgresql://datastore:datastore@datastore/datastore
+#    links:
+#      - datastore
+#      - django_db
+#    environment:
+#      MEMORIOUS_DATASTORE_URI: postgresql://datastore:datastore@datastore/datastore
+#    tmpfs:
+#      - "/tmp"
+
+  elasticsearch:
+    image: elasticsearch:7.6.2
+    volumes:
+      - "elasticsearch:/usr/share/elasticsearch/data"
+    environment:
+      discovery.type: single-node
+
+  declaration_nav:
+    image: opendataservices/open-register-of-interests:db-load
+    links:
+      - django_db
+      - elasticsearch
+    volumes:
+      - "./import:/import"
+    environment:
+      DATABASE_URL: postgresql://django_db:django_db@django_db/django_db
+      ALLOWED_HOSTS: '.docker.opendataservices.uk0.bigv.io,localhost'
+      DEBUG: 'False'
+      ES_HOST: "elasticsearch:9200"
+    tmpfs:
+      - "/tmp"
+    ports:
+    #  - "8001:8001"
+    #  - "80:8001"
+      - "8002:8001"
+
+volumes:
+  elasticsearch:
+    driver: local
+
