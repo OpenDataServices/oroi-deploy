@@ -57,6 +57,7 @@ services:
     environment:
       POSTGRES_USER: django_db
       POSTGRES_PASSWORD: django_db
+    restart: always
  
 #  load_scrape_data:
 #    image: opendataservices/open-register-of-interests
@@ -75,6 +76,7 @@ services:
       - "elasticsearch:/usr/share/elasticsearch/data"
     environment:
       discovery.type: single-node
+    restart: always
 
   declaration_nav:
     image: opendataservices/open-register-of-interests:db-load
@@ -93,6 +95,7 @@ services:
     ports:
       - "80:8001"
       - "8001:8001"
+    restart: always
 
 volumes:
   elasticsearch:
