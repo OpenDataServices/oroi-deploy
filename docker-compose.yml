@@ -92,6 +92,7 @@ services:
       - "/tmp"
     ports:
       - "80:8001"
+      - "8001:8001"
 
 volumes:
   elasticsearch:
