@@ -17,7 +17,7 @@ services:
       - "./_build/redis-data:/data"
 
   worker:
-    image: opendataservices/oroi-scrape:dev
+    image: opendataservices/oroi-scrape:latest
     command: memorious process
     links:
       - redis
@@ -35,7 +35,7 @@ services:
       - "/tmp"
 
 #  ui:
-#    image: opendataservices/oroi-scrape:dev
+#    image: opendataservices/oroi-scrape:latest
 #    command: gunicorn -t 900 -w 4 -b 0.0.0.0:8000 --log-level info --log-file - memorious.ui.views:app
 #    links:
 #      - redis
