@@ -1,75 +1,48 @@
 version: "3.5"
 
 services:
-  datastore:
+  memorious-postgres:
     image: postgres:11.4
     volumes:
-      - "./_build/datastore:/var/lib/postgresql/data"
-      - "./import:/import"
+      - "memorius-postgres:/var/lib/postgresql/data"
+#      - "./import:/import"
     environment:
       POSTGRES_USER: datastore
       POSTGRES_PASSWORD: datastore
 
-  redis:
+  memorius-redis:
     image: redis:alpine
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
-      - "./_build/redis-data:/data"
+      - "memorius-redis:/data"
 
-  worker:
+  memorious-worker:
     image: opendataservices/oroi-scrape:latest
     command: memorious process
     links:
-      - redis
-      - datastore
+      - memorius-postgres
+      - memorius-redis
     volumes:
-      - "./_build/data:/data"
+      - "memorious-data:/data"
     environment:
       MEMORIOUS_BASE_PATH: /data
       MEMORIOUS_CONFIG_PATH: /oroi-scrape/config
       MEMORIOUS_DEBUG: 'true'
       ARCHIVE_PATH: /data/archive
-      REDIS_URL: redis://redis:6379/0
-      MEMORIOUS_DATASTORE_URI: postgresql://datastore:datastore@datastore/datastore
+      REDIS_URL: redis://memorius-redis:6379/0
+      MEMORIOUS_DATASTORE_URI: postgresql://datastore:datastore@memorius-postgres/datastore
     tmpfs:
       - "/tmp"
 
-#  ui:
-#    image: opendataservices/oroi-scrape:latest
-#    command: gunicorn -t 900 -w 4 -b 0.0.0.0:8000 --log-level info --log-file - memorious.ui.views:app
-#    links:
-#      - redis
-#      - datastore
-#    volumes:
-#      - "./_build/data:/data"
-#    environment:
-#      MEMORIOUS_CONFIG_PATH: /oroi-scrape/config
-#      ARCHIVE_PATH: /data/archive
-#    tmpfs:
-#      - "/tmp"
-#    ports:
-#      - "8000:8000"
-      
-  django_db:
+  django-postgres:
     image: postgres:11.4
     volumes:
-      - "./_build/django_db:/var/lib/postgresql/data"
+      - "django-postgres:/var/lib/postgresql/data"
     environment:
       POSTGRES_USER: django_db
       POSTGRES_PASSWORD: django_db
     restart: always
  
-#  load_scrape_data:
-#    image: opendataservices/open-register-of-interests
-#    command: python /code/oroi/manage.py load_scrape_data postgresql://datastore:datastore@datastore/datastore
-#    links:
-#      - datastore
-#      - django_db
-#    environment:
-#      MEMORIOUS_DATASTORE_URI: postgresql://datastore:datastore@datastore/datastore
-#    tmpfs:
-#      - "/tmp"
-
   elasticsearch:
     image: elasticsearch:7.6.2
     volumes:
@@ -83,10 +56,10 @@ services:
     links:
       - django_db
       - elasticsearch
-    volumes:
-      - "./import:/import"
+#    volumes:
+#      - "./import:/import"
     environment:
-      DATABASE_URL: postgresql://django_db:django_db@django_db/django_db
+      DATABASE_URL: postgresql://django_db:django_db@django-postgres/django_db
       ALLOWED_HOSTS: '.docker.opendataservices.uk0.bigv.io,localhost'
       DEBUG: 'False'
       ES_HOST: "elasticsearch:9200"
@@ -98,6 +71,14 @@ services:
     restart: always
 
 volumes:
+  memorius-postgres:
+    driver: local
+  memorius-redis:
+    driver: local
+  memorious-data:
+    driver: local
+  django-postgres:
+    driver: local
   elasticsearch:
     driver: local
 
