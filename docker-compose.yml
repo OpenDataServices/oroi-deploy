@@ -19,9 +19,6 @@ services:
   memorious-worker:
     image: opendataservices/oroi-scrape:latest
     command: memorious process
-    links:
-      - memorius-postgres
-      - memorius-redis
     volumes:
       - "memorious-data:/data"
     environment:
@@ -53,9 +50,6 @@ services:
 
   declaration_nav:
     image: opendataservices/open-register-of-interests:db-load
-    links:
-      - django_db
-      - elasticsearch
 #    volumes:
 #      - "./import:/import"
     environment:
