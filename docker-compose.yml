@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: datastore
       POSTGRES_PASSWORD: datastore
 
-  memorius-redis:
+  memorious-redis:
     image: redis:alpine
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
@@ -26,7 +26,7 @@ services:
       MEMORIOUS_CONFIG_PATH: /oroi-scrape/config
       MEMORIOUS_DEBUG: 'true'
       ARCHIVE_PATH: /data/archive
-      REDIS_URL: redis://memorius-redis:6379/0
+      REDIS_URL: redis://memorious-redis:6379/0
       MEMORIOUS_DATASTORE_URI: postgresql://datastore:datastore@memorious-postgres/datastore
     tmpfs:
       - "/tmp"
@@ -41,7 +41,7 @@ services:
       MEMORIOUS_CONFIG_PATH: /oroi-scrape/config
       MEMORIOUS_DEBUG: 'true'
       ARCHIVE_PATH: /data/archive
-      REDIS_URL: redis://memorius-redis:6379/0
+      REDIS_URL: redis://memorious-redis:6379/0
       MEMORIOUS_DATASTORE_URI: postgresql://datastore:datastore@memorious-postgres/datastore
     tmpfs:
       - "/tmp"
