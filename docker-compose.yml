@@ -27,9 +27,27 @@ services:
       MEMORIOUS_DEBUG: 'true'
       ARCHIVE_PATH: /data/archive
       REDIS_URL: redis://memorius-redis:6379/0
-      MEMORIOUS_DATASTORE_URI: postgresql://datastore:datastore@memorius-postgres/datastore
+      MEMORIOUS_DATASTORE_URI: postgresql://datastore:datastore@memorious-postgres/datastore
     tmpfs:
       - "/tmp"
+
+  memorious-run:
+    image: opendataservices/oroi-scrape:latest
+    command: memorious run ukparl_twfy
+    volumes:
+      - "memorious-data:/data"
+    environment:
+      MEMORIOUS_BASE_PATH: /data
+      MEMORIOUS_CONFIG_PATH: /oroi-scrape/config
+      MEMORIOUS_DEBUG: 'true'
+      ARCHIVE_PATH: /data/archive
+      REDIS_URL: redis://memorius-redis:6379/0
+      MEMORIOUS_DATASTORE_URI: postgresql://datastore:datastore@memorious-postgres/datastore
+    tmpfs:
+      - "/tmp"
+    deploy:
+      restart_policy:
+        condition: none
 
   django-postgres:
     image: postgres:11.4
@@ -50,6 +68,7 @@ services:
 
   declaration_nav:
     image: opendataservices/open-register-of-interests:db-load
+    command: "bash -c 'python /code/oroi/manage.py migrate && python /code/oroi/manage.py runserver 0.0.0.0:8001'"
 #    volumes:
 #      - "./import:/import"
     environment:
@@ -62,6 +81,20 @@ services:
     ports:
       - "80:8001"
       - "8001:8001"
+    restart: always
+
+  declaration_nav-load:
+    image: opendataservices/open-register-of-interests:db-load
+    command: "python /code/oroi/manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore"
+#    volumes:
+#      - "./import:/import"
+    environment:
+      DATABASE_URL: postgresql://django_db:django_db@django-postgres/django_db
+      ALLOWED_HOSTS: '.docker.opendataservices.uk0.bigv.io,localhost'
+      DEBUG: 'False'
+      ES_HOST: "elasticsearch:9200"
+    tmpfs:
+      - "/tmp"
     restart: always
 
 volumes:
