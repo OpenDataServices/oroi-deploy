@@ -35,7 +35,7 @@ services:
 
   memorious-run:
     image: opendataservices/oroi-scrape:latest
-    command: memorious run ukparl_twfy
+    command: "sh -c 'memorious run ukparl_twfy && memorious run bristol_register && memorious run gla_gifts && memorious run gla_register && memorious run ukparl_groups && echo done'"
     volumes:
       - "memorious-data:/data"
     environment:
@@ -69,8 +69,10 @@ services:
     restart: always
 
   declaration_nav:
-    image: opendataservices/open-register-of-interests:db-load
-    command: "bash -c 'python /code/oroi/manage.py migrate && python /code/oroi/manage.py runserver 0.0.0.0:8001'"
+    image: opendataservices/open-register-of-interests:re-map
+    working_dir: /code/oroi/
+    #command: "sh -c './manage.py migrate && ./manage.py search_index --rebuild && ./manage.py runserver 0.0.0.0:8001'"
+    command: "sh -c './manage.py migrate && ./manage.py runserver 0.0.0.0:8001'"
 #    volumes:
 #      - "./import:/import"
     environment:
@@ -86,8 +88,9 @@ services:
     restart: always
 
   declaration_nav-load:
-    image: opendataservices/open-register-of-interests:db-load
-    command: "python /code/oroi/manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore"
+    image: opendataservices/open-register-of-interests:re-map
+    working_dir: /code/oroi/
+    command: "python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore"
 #    volumes:
 #      - "./import:/import"
     environment:
