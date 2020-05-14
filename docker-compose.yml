@@ -24,12 +24,14 @@ services:
     environment:
       MEMORIOUS_BASE_PATH: /data
       MEMORIOUS_CONFIG_PATH: /oroi-scrape/config
-      MEMORIOUS_DEBUG: 'true'
+      MEMORIOUS_DEBUG: 'false'
       ARCHIVE_PATH: /data/archive
       REDIS_URL: redis://memorious-redis:6379/0
       MEMORIOUS_DATASTORE_URI: postgresql://datastore:datastore@memorious-postgres/datastore
     tmpfs:
       - "/tmp"
+    deploy:
+      replicas: 2
 
   memorious-run:
     image: opendataservices/oroi-scrape:latest
@@ -39,7 +41,7 @@ services:
     environment:
       MEMORIOUS_BASE_PATH: /data
       MEMORIOUS_CONFIG_PATH: /oroi-scrape/config
-      MEMORIOUS_DEBUG: 'true'
+      MEMORIOUS_DEBUG: 'false'
       ARCHIVE_PATH: /data/archive
       REDIS_URL: redis://memorious-redis:6379/0
       MEMORIOUS_DATASTORE_URI: postgresql://datastore:datastore@memorious-postgres/datastore
