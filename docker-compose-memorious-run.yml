@@ -1,0 +1,25 @@
+version: "3.5"
+
+services:
+  memorious-run:
+    image: opendataservices/oroi-scrape:latest
+    #command: "sh -c 'memorious run ukparl_twfy && memorious run bristol_register && memorious run gla_gifts && memorious run gla_register && memorious run ukparl_groups && echo done'"
+    command: "sh -c 'memorious run bristol_meetings'"
+    volumes:
+      - "memorious-data:/data"
+    environment:
+      MEMORIOUS_BASE_PATH: /data
+      MEMORIOUS_CONFIG_PATH: /oroi-scrape/config
+      MEMORIOUS_DEBUG: 'false'
+      ARCHIVE_PATH: /data/archive
+      REDIS_URL: redis://memorious-redis:6379/0
+      MEMORIOUS_DATASTORE_URI: postgresql://datastore:datastore@memorious-postgres/datastore
+    tmpfs:
+      - "/tmp"
+    deploy:
+      restart_policy:
+        condition: none
+
+volumes:
+  memorious-data:
+    driver: local

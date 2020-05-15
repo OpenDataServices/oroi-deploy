@@ -33,24 +33,6 @@ services:
     deploy:
       replicas: 2
 
-  memorious-run:
-    image: opendataservices/oroi-scrape:latest
-    command: "sh -c 'memorious run ukparl_twfy && memorious run bristol_register && memorious run gla_gifts && memorious run gla_register && memorious run ukparl_groups && echo done'"
-    volumes:
-      - "memorious-data:/data"
-    environment:
-      MEMORIOUS_BASE_PATH: /data
-      MEMORIOUS_CONFIG_PATH: /oroi-scrape/config
-      MEMORIOUS_DEBUG: 'false'
-      ARCHIVE_PATH: /data/archive
-      REDIS_URL: redis://memorious-redis:6379/0
-      MEMORIOUS_DATASTORE_URI: postgresql://datastore:datastore@memorious-postgres/datastore
-    tmpfs:
-      - "/tmp"
-    deploy:
-      restart_policy:
-        condition: none
-
   django-postgres:
     image: postgres:11.4
     volumes:
@@ -84,21 +66,6 @@ services:
     ports:
       - "80:8001"
       - "8001:8001"
-    restart: always
-
-  declaration_nav-load:
-    image: opendataservices/open-register-of-interests:re-map
-    working_dir: /code/oroi/
-    command: "python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore"
-#    volumes:
-#      - "./import:/import"
-    environment:
-      DATABASE_URL: postgresql://django_db:django_db@django-postgres/django_db
-      ALLOWED_HOSTS: '.docker.opendataservices.uk0.bigv.io,localhost'
-      DEBUG: 'False'
-      ES_HOST: "elasticsearch:9200"
-    tmpfs:
-      - "/tmp"
     restart: always
 
 volumes:
