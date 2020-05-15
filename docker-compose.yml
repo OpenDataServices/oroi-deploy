@@ -71,8 +71,7 @@ services:
   declaration_nav:
     image: opendataservices/open-register-of-interests:re-map
     working_dir: /code/oroi/
-    #command: "sh -c './manage.py migrate && ./manage.py search_index --rebuild && ./manage.py runserver 0.0.0.0:8001'"
-    command: "sh -c './manage.py migrate && ./manage.py runserver 0.0.0.0:8001'"
+    command: "sh -c './manage.py migrate && ./manage.py search_index --rebuild -f && ./manage.py runserver 0.0.0.0:8001'"
 #    volumes:
 #      - "./import:/import"
     environment:
