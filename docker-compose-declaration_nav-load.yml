@@ -4,14 +4,14 @@ services:
   declaration_nav-load:
     image: opendataservices/open-register-of-interests:re-map
     working_dir: /code/oroi/
-    command: "sh -c 'python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore'"
-#    command: "sh -c '
-#      python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore ukparl_twfy &
-#      python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore bristol_register &
-#      python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore gla_gifts &
-#      python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore gla_register &
-#      python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore ukparl_groups &
-#      wait'"
+    #    command: "sh -c 'python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore'"
+    command: "sh -c '
+      python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore bristol_meetings ;
+      python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore bristol_register ;
+      python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore gla_register ;
+      python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore ukparl_groups ;
+      python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore gla_gifts ;
+      python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore ukparl_twfy'"
     environment:
       DATABASE_URL: postgresql://django_db:django_db@django-postgres/django_db
       ALLOWED_HOSTS: '.docker.opendataservices.uk0.bigv.io,localhost'
