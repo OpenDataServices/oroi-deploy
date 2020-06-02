@@ -6,6 +6,9 @@ services:
     working_dir: /code/oroi/
     #    command: "sh -c 'python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore'"
     command: "sh -c '
+      python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore ukparl_ministers ;
+      python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore nsomerset_register ;
+      python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore southglos_register ;
       python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore bristol_meetings ;
       python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore bristol_register ;
       python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore gla_register ;
