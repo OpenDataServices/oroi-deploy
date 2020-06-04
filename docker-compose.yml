@@ -4,7 +4,7 @@ services:
   memorious-postgres:
     image: postgres:11.8
     volumes:
-      - "memorius-postgres:/var/lib/postgresql/data"
+      - "memorious-postgres:/var/lib/postgresql/data"
 #      - "./import:/import"
     environment:
       POSTGRES_USER: datastore
@@ -14,7 +14,7 @@ services:
     image: redis:6.0.4-alpine3.11
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
-      - "memorius-redis:/data"
+      - "memorious-redis:/data"
 
   memorious-worker:
     image: opendataservices/oroi-scrape:latest
@@ -69,9 +69,9 @@ services:
     restart: always
 
 volumes:
-  memorius-postgres:
+  memorious-postgres:
     driver: local
-  memorius-redis:
+  memorious-redis:
     driver: local
   memorious-data:
     driver: local
