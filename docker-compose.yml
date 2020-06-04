@@ -17,7 +17,7 @@ services:
       - "memorious-redis:/data"
 
   memorious-worker:
-    image: opendataservices/oroi-scrape:latest
+    image: opendataservices/oroi-scrape:docker
     command: memorious process
     volumes:
       - "memorious-data:/data"
@@ -51,7 +51,7 @@ services:
     restart: always
 
   declaration_nav:
-    image: opendataservices/open-register-of-interests:dev
+    image: opendataservices/open-register-of-interests:docker
     working_dir: /code/oroi/
     command: "sh -c './manage.py migrate && ./manage.py search_index --rebuild -f && ./manage.py runserver 0.0.0.0:8001'"
 #    volumes:
