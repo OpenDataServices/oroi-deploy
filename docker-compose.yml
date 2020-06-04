@@ -2,7 +2,7 @@ version: "3.5"
 
 services:
   memorious-postgres:
-    image: postgres:11.4
+    image: postgres:11.8
     volumes:
       - "memorius-postgres:/var/lib/postgresql/data"
 #      - "./import:/import"
@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: datastore
 
   memorious-redis:
-    image: redis:alpine
+    image: redis:6.0.4-alpine3.11
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - "memorius-redis:/data"
@@ -34,7 +34,7 @@ services:
       replicas: 2
 
   django-postgres:
-    image: postgres:11.4
+    image: postgres:11.8
     volumes:
       - "django-postgres:/var/lib/postgresql/data"
     environment:
@@ -43,7 +43,7 @@ services:
     restart: always
  
   elasticsearch:
-    image: elasticsearch:7.6.2
+    image: elasticsearch:7.7.1
     volumes:
       - "elasticsearch:/usr/share/elasticsearch/data"
     environment:
