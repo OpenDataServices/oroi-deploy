@@ -4,7 +4,12 @@ services:
   declaration_nav-load:
     image: opendataservices/open-register-of-interests:docker
     working_dir: /code/oroi/
-    #    command: "sh -c 'python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore'"
+    # This runs all tables automatically:
+    # command: "sh -c 'python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore'"
+    #
+    # Instead, in the below, each table is run explicitly. The main purpose of
+    # this is to control the order, such that the largest datasets are last, so
+    # you get greatest diversity of results as quickly as possible:
     command: "sh -c '
       python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore ukparl_ministers ;
       python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore nsomerset_register ;
@@ -14,7 +19,7 @@ services:
       python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore gla_register ;
       python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore ukparl_groups ;
       python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore gla_gifts ;
-      python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore ukparl_twfy'"
+      python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore ukparl_twfy_man'"
     environment:
       DATABASE_URL: postgresql://django_db:django_db@django-postgres/django_db
       ALLOWED_HOSTS: '.docker.opendataservices.uk0.bigv.io,localhost'
