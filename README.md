@@ -21,6 +21,20 @@ docker-compose logs -f declaration_nav
 
 You should be able to visit http://localhost:8001/ in a browser (may take a couple of minutes).
 
+### Build an image locally
+
+e.g.
+
+``` bash
+cd path/to/open-register-of-interests
+docker build -t opendataservices/open-register-of-interests:docker .
+cd back/to/this/dir
+# Reload the container
+docker-compose -f docker-compose.yml -f docker-compose.override-dev.yml up -d
+```
+
+You should be able to visit http://localhost:8001/ in a browser (may take a couple of minutes).
+
 ### Removing everything, so that you can start again
 
 ``` bash
