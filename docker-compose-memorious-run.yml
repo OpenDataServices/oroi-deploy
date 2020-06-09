@@ -2,7 +2,7 @@ version: "3.5"
 
 services:
   memorious-run:
-    image: opendataservices/oroi-scrape:docker
+    image: opendataservices/oroi-scrape:latest
     command: "sh -c '
         memorious run ukparl_ministers &&
         memorious run nsomerset_register &&

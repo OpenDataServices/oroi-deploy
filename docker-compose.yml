@@ -17,7 +17,7 @@ services:
       - "memorious-redis:/data"
 
   memorious-worker:
-    image: opendataservices/oroi-scrape:docker
+    image: opendataservices/oroi-scrape:latest
     command: memorious process
     volumes:
       - "memorious-data:/data"
