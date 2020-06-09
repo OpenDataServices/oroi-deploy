@@ -9,6 +9,10 @@ services:
     environment:
       POSTGRES_USER: datastore
       POSTGRES_PASSWORD: datastore
+    ports:
+      # WARNING this binds to localhost with docker compose,
+      # but on ALL interfaces with docker stack.
+      - "127.0.0.1:5432:5432"
 
   memorious-redis:
     image: redis:6.0.4-alpine3.11
