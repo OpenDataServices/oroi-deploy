@@ -55,7 +55,7 @@ services:
     restart: always
 
   declaration_nav:
-    image: opendataservices/open-register-of-interests:docker
+    image: opendataservices/open-register-of-interests:latest
     working_dir: /code/oroi/
 #    volumes:
 #      - "./import:/import"

@@ -2,7 +2,7 @@ version: "3.5"
 
 services:
   declaration_nav-load:
-    image: opendataservices/open-register-of-interests:docker
+    image: opendataservices/open-register-of-interests:latest
     working_dir: /code/oroi/
     # This runs all tables automatically:
     # command: "sh -c 'python manage.py load_scrape_data postgresql://datastore:datastore@memorious-postgres/datastore'"
