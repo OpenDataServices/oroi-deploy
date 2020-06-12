@@ -56,6 +56,10 @@ services:
 
   declaration_nav:
     image: opendataservices/open-register-of-interests:latest
+    command: "sh -c '
+      ./manage.py migrate &&
+      ./manage.py runserver 0.0.0.0:8001
+      '"
     working_dir: /code/oroi/
 #    volumes:
 #      - "./import:/import"
