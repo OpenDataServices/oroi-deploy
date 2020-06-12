@@ -71,7 +71,7 @@ services:
     tmpfs:
       - "/tmp"
     ports:
-      - "80:8001"
+      - "81:8001"
       - "8001:8001"
     restart: always
 

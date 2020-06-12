@@ -4,7 +4,7 @@ services:
   apache-proxy:
     image: opendataservices/oroi-proxy:latest
     ports:
-      - "80:80"
+      - "81:80"
     environment:
         OROI_PROXY_LIVE_URL: "http://oroi-dev-3.docker.opendataservices.uk0.bigv.io/"
         OROI_PROXY_DEV_URL:  "http://oroi-dev-5.docker.opendataservices.uk0.bigv.io/"
