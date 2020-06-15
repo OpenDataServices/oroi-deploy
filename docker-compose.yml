@@ -58,8 +58,11 @@ services:
     image: opendataservices/open-register-of-interests:latest
     command: "sh -c '
       ./manage.py migrate &&
+      ./manage.py collectstatic &&
       gunicorn --workers 2 --bind 0.0.0.0:8001 oroi.wsgi:application
       '"
+    volumes:
+      - "django-static:/django-static"
     working_dir: /code/oroi/
 #    volumes:
 #      - "./import:/import"
@@ -68,12 +71,20 @@ services:
       ALLOWED_HOSTS: '.declared.info,.docker.opendataservices.uk0.bigv.io,.localhost'
       DEBUG: 'False'
       ES_HOST: "elasticsearch:9200"
+      STATIC_ROOT: "/django-static/static/"
     tmpfs:
       - "/tmp"
-    ports:
-      - "81:8001"
-      - "8001:8001"
     restart: always
+
+  apache-static:
+    image: opendataservices/oroi-static:latest
+    volumes:
+      - "django-static:/django-static"
+    ports:
+      - "81:80"
+      - "8001:80"
+    environment:
+      OROI_STATIC_PROXY_URL: "http://declaration_nav:8001/"
 
 volumes:
   memorious-postgres:
@@ -83,6 +94,8 @@ volumes:
   memorious-data:
     driver: local
   django-postgres:
+    driver: local
+  django-static:
     driver: local
   elasticsearch:
     driver: local
