@@ -58,7 +58,7 @@ services:
     image: opendataservices/open-register-of-interests:latest
     command: "sh -c '
       ./manage.py migrate &&
-      ./manage.py runserver 0.0.0.0:8001
+      gunicorn --workers 2 --bind 0.0.0.0:8001 oroi.wsgi:application
       '"
     working_dir: /code/oroi/
 #    volumes:
