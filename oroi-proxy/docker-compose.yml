@@ -6,6 +6,6 @@ services:
     ports:
       - "81:80"
     environment:
-        OROI_PROXY_LIVE_URL: "http://oroi-dev-3.docker.opendataservices.uk0.bigv.io/"
-        OROI_PROXY_DEV_URL:  "http://oroi-dev-5.docker.opendataservices.uk0.bigv.io/"
+        OROI_PROXY_LIVE_URL: "http://oroi-7.docker.opendataservices.uk0.bigv.io/"
+        OROI_PROXY_DEV_URL:  "http://oroi-7.docker.opendataservices.uk0.bigv.io/"
         OROI_PROXY_TMP_URL:  "http://oroi-7.docker.opendataservices.uk0.bigv.io/"
