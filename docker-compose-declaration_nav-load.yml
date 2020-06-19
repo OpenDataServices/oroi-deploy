@@ -25,6 +25,7 @@ services:
       ALLOWED_HOSTS: '.docker.opendataservices.uk0.bigv.io,localhost'
       DEBUG: 'False'
       ES_HOST: "elasticsearch:9200"
+      ES_DISABLE: 'True'
     tmpfs:
       - "/tmp"
     deploy:
