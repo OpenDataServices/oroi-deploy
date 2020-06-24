@@ -25,6 +25,9 @@ services:
       ALLOWED_HOSTS: '.docker.opendataservices.uk0.bigv.io,localhost'
       DEBUG: 'False'
       ES_HOST: "elasticsearch:9200"
+      # Disable elasticsearch during the load, and then run manage.py
+      # search_index separately, which seemed to be faster than doing both at
+      # once.
       ES_DISABLE: 'True'
     tmpfs:
       - "/tmp"
