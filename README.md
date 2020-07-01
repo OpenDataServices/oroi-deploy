@@ -72,7 +72,7 @@ docker-compose -f docker-compose-declaration_nav-load.yml up -d
 
 ## Live deploy (docker stack)
 
-### Getting started, and run the scrapes
+### Getting started
 
 If on Bytemark, set up a server with "Docker on Debian 9" and 5GiB of RAM.
 Then, run the docker-workarounds salt state https://github.com/OpenDataServices/opendataservices-deploy/pull/100
@@ -84,6 +84,13 @@ git clone https://github.com/OpenDataServices/oroi-deploy
 # Rerun this command whenever you have updates to docker images, or the docker
 # compose file
 docker stack deploy -c oroi-deploy/docker-compose.yml oroi-sprint3
+```
+
+Next run the scrapes, or load some data into the memorious postgres db from a SQL dump. After either of these, follow the [Load the data into Django](#load-the-data-into-django) section.
+
+### Run the scrapes
+
+``` bash
 # Trigger memorious scrapes
 docker stack deploy -c oroi-deploy/docker-compose-memorious-run.yml oroi-sprint3
 # Watch the scrapes:
@@ -152,7 +159,7 @@ docker service ps tmp-postgres
 docker service logs --raw -f tmp-postgres
 ```
 
-Postgres export — memorious db:
+Postgres export — memorious (scrape) db:
 ``` bash
 docker service create --name tmp-postgres --restart-condition=none --detach --network=oroi-sprint3_default --mount type=bind,source=/mnt/docker-export,destination=/export postgres:11.4 sh -c 'pg_dump "host=memorious-postgres user=datastore password=datastore" > /export/db.log && ls -lh /export/db.log'
 ```
@@ -162,7 +169,7 @@ Postgres export — django db:
 docker service create --name tmp-postgres --restart-condition=none --detach --network=oroi-sprint3_default --mount type=bind,source=/mnt/docker-export,destination=/export postgres:11.4 sh -c 'pg_dump "host=django-postgres user=django_db password=django_db" > /export/db.log && ls -lh /export/db.log'
 ```
 
-Postgres import — memorious db:
+Postgres import — memorious (scrape) db:
 ``` bash
 docker service create --name tmp-postgres --restart-condition=none --detach --network=oroi-sprint3_default --mount type=bind,source=/mnt/docker-export,destination=/export postgres:11.4 psql "host=memorious-postgres user=datastore password=datastore" -f /export/oroi-scrape-sprint3-attempt06.sql
 ```
@@ -171,6 +178,8 @@ Postgres import — django db:
 ``` bash
 docker service create --name tmp-postgres --restart-condition=none --detach --network=oroi-sprint3_default  --mount type=bind,source=/mnt/docker-export,destination=/export  postgres:11.4 psql "host=django-postgres user=django_db password=django_db" -f /export/oroi-django-sprint3-attempt01.sql
 ```
+
+Copies of SQL dumps are accessible to Open Data Services employees [on Google Drive](https://drive.google.com/drive/u/0/folders/12CFZYOQVUTuu8CB_cbZ82ayNZ81zY-ej).
 
 ### Interactive postgres SQL session
 
