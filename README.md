@@ -115,3 +115,56 @@ docker volume rm oroi-sprint3_django-postgres oroi-sprint3_elasticsearch
 docker stack deploy -c oroi-deploy/docker-compose.yml oroi-sprint3
 ```
 Then, to reload follow [Load the data into Django](#load-the-data-into-django) above.
+
+### Postgres database import/export
+
+Before any of these:
+
+``` bash
+# Make the directory we'll mount inside the docker container
+mkdir /mnt/docker-export
+# Remove the service name we want to use, in case it already exists
+docker service rm tmp-postgres
+```
+
+After any of these (to watch the progress):
+``` bash
+# See if the service is still running:
+docker service ps tmp-postgres
+# Watch the logs (won't exit once done):
+docker service logs --raw -f tmp-postgres
+```
+
+Postgres export — memorious db:
+``` bash
+docker service create --name tmp-postgres --restart-condition=none --detach --network=oroi-sprint3_default --mount type=bind,source=/mnt/docker-export,destination=/export postgres:11.4 sh -c 'pg_dump "host=memorious-postgres user=datastore password=datastore" > /export/db.log && ls -lh /export/db.log'
+```
+
+Postgres export — django db:
+``` bash
+docker service create --name tmp-postgres --restart-condition=none --detach --network=oroi-sprint3_default --mount type=bind,source=/mnt/docker-export,destination=/export postgres:11.4 sh -c 'pg_dump "host=django-postgres user=django_db password=django_db" > /export/db.log && ls -lh /export/db.log'
+```
+
+Postgres import — memorious db:
+``` bash
+docker service create --name tmp-postgres --restart-condition=none --detach --network=oroi-sprint3_default --mount type=bind,source=/mnt/docker-export,destination=/export postgres:11.4 psql "host=memorious-postgres user=datastore password=datastore" -f /export/oroi-scrape-sprint3-attempt06.sql
+```
+
+Postgres import — django db:
+``` bash
+docker service create --name tmp-postgres --restart-condition=none --detach --network=oroi-sprint3_default  --mount type=bind,source=/mnt/docker-export,destination=/export  postgres:11.4 psql "host=django-postgres user=django_db password=django_db" -f /export/oroi-django-sprint3-attempt01.sql
+```
+
+### Interactive postgres SQL session
+
+`docker stack` doesn't support interactive sessions, so we do a raw `docker exec` with a bash command substitution to work out the container id.
+
+Memorious db:
+``` bash
+docker exec --tty -i $(docker ps -q -f name=oroi-sprint3_memorious-postgres.1) psql -h 127.0.0.1 -U datastore
+```
+
+Django db:
+``` bash
+docker exec --tty -i $(docker ps -q -f name=oroi-sprint3_django-postgres.1) psql -h 127.0.0.1 -U django_db
+```
