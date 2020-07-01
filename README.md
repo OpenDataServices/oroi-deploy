@@ -1,6 +1,8 @@
 # Open Register of Interests — deploy
 
-## Dev setup
+Note, there are two sets of commands here, docker-compose commands for running a local dev copy, and docker stack commands for running a live copy on a server.
+
+## Dev setup (docker-compose)
 
 ### Getting started
 
@@ -60,3 +62,56 @@ docker-compose -f docker-compose.yml -f docker-compose.override-dev.yml up -d
 # Run the load
 docker-compose -f docker-compose-declaration_nav-load.yml up -d
 ```
+
+## Live deploy (docker stack)
+
+### Getting started, and run the scrapes
+
+``` bash
+# First run the docker-workarounds salt state https://github.com/OpenDataServices/opendataservices-deploy/pull/100
+docker swarm init
+git clone https://github.com/OpenDataServices/oroi-deploy
+# Run most containers (all except those that initiate/do a scrape/load)
+docker stack deploy -c oroi-deploy/docker-compose.yml oroi-sprint3
+# Trigger memorious scrapes
+docker stack deploy -c oroi-deploy/docker-compose-memorious-run.yml oroi-sprint3
+# Watch the scrapes:
+docker service logs oroi-sprint3_memorious-worker --raw -f --tail 10
+```
+
+### Load the data into Django
+
+Once the scrapers are done (or sooner if you want to test a partial load):
+
+``` bash
+docker stack deploy -c oroi-deploy/docker-compose-declaration_nav-load.yml oroi-sprint3
+# Check for errors with:
+docker service logs oroi-sprint3_declaration_nav-load | grep Error
+# Rebuild ES index:
+docker exec --tty -i $(docker ps -q -f name=oroi-sprint3_declaration_nav.1) ./manage.py search_index --rebuild -f
+# Make CSV:
+docker exec --tty -i $(docker ps -q -f name=oroi-sprint3_declaration_nav.1) sh -c './manage.py csv_user_dump_all && mv /tmp/all_data.csv /django-static/static'
+```
+
+### Re-doing bits
+
+Redeploy with new images or changes to the compose file:
+``` bash
+docker stack deploy -c oroi-deploy/docker-compose.yml oroi-sprint3
+```
+
+Remove all persistent data relating to scraping (all memorious data, but not that loaded into Django), and relaunch the scrapers:
+``` bash
+docker service rm oroi-sprint3_memorious-postgres oroi-sprint3_memorious-redis oroi-sprint3_memorious-worker oroi-sprint3_memorious-run
+docker volume rm oroi-sprint3_memorious-data oroi-sprint3_memorious-postgres oroi-sprint3_memorious-redis
+docker stack deploy -c oroi-deploy/docker-compose.yml -c oroi-deploy/docker-compose-memorious-run.yml oroi-sprint3
+```
+
+Remove all django data:
+``` bash
+docker service rm oroi-sprint3_declaration_nav oroi-sprint3_declaration_nav-load oroi-sprint3_django-postgres oroi-sprint3_elasticsearch tmp-postgres oroi-sprint3_apache-static
+# Wait a minute for these to shut down properly
+docker volume rm oroi-sprint3_django-postgres oroi-sprint3_elasticsearch
+docker stack deploy -c oroi-deploy/docker-compose.yml oroi-sprint3
+```
+Then, to reload follow [Load the data into Django](#load-the-data-into-django) above.
