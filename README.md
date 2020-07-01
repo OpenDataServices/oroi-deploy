@@ -23,6 +23,13 @@ docker-compose logs -f declaration_nav
 
 You should be able to visit http://localhost:8001/ in a browser (may take a couple of minutes).
 
+### Pull the latest images
+
+``` bash
+docker-compose pull
+docker-compose -f docker-compose.yml -f docker-compose.override-dev.yml up -d
+```
+
 ### Build an image locally
 
 e.g.
@@ -67,11 +74,15 @@ docker-compose -f docker-compose-declaration_nav-load.yml up -d
 
 ### Getting started, and run the scrapes
 
+If on Bytemark, set up a server with "Docker on Debian 9" and 5GiB of RAM.
+Then, run the docker-workarounds salt state https://github.com/OpenDataServices/opendataservices-deploy/pull/100
+
 ``` bash
-# First run the docker-workarounds salt state https://github.com/OpenDataServices/opendataservices-deploy/pull/100
 docker swarm init
 git clone https://github.com/OpenDataServices/oroi-deploy
-# Run most containers (all except those that initiate/do a scrape/load)
+# Run most containers (all except those that initiate/do a scrape/load):
+# Rerun this command whenever you have updates to docker images, or the docker
+# compose file
 docker stack deploy -c oroi-deploy/docker-compose.yml oroi-sprint3
 # Trigger memorious scrapes
 docker stack deploy -c oroi-deploy/docker-compose-memorious-run.yml oroi-sprint3
@@ -85,6 +96,8 @@ Once the scrapers are done (or sooner if you want to test a partial load):
 
 ``` bash
 docker stack deploy -c oroi-deploy/docker-compose-declaration_nav-load.yml oroi-sprint3
+# Watch the load:
+docker service logs oroi-sprint3_declaration_nav-load --raw -f --tail 10
 # Check for errors with:
 docker service logs oroi-sprint3_declaration_nav-load | grep Error
 # Rebuild ES index:
@@ -92,6 +105,10 @@ docker exec --tty -i $(docker ps -q -f name=oroi-sprint3_declaration_nav.1) ./ma
 # Make CSV:
 docker exec --tty -i $(docker ps -q -f name=oroi-sprint3_declaration_nav.1) sh -c './manage.py csv_user_dump_all && mv /tmp/all_data.csv /django-static/static'
 ```
+
+### Pull the latest images
+
+This will happen automatically when you run a `docker stack deploy` command.
 
 ### Re-doing bits
 
