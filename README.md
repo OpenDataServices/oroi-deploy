@@ -77,6 +77,8 @@ docker-compose -f docker-compose-declaration_nav-load.yml up -d
 If on Bytemark, set up a server with "Docker on Debian 9" and 5GiB of RAM.
 Then, run the docker-workarounds salt state https://github.com/OpenDataServices/opendataservices-deploy/pull/100
 
+These instructions assume a 1 node swarm, with the manager on the same server.
+
 ``` bash
 docker swarm init
 git clone https://github.com/OpenDataServices/oroi-deploy
