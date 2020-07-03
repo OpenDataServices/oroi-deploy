@@ -75,7 +75,7 @@ docker-compose -f docker-compose-declaration_nav-load.yml up -d
 ### Getting started
 
 If on Bytemark, set up a server with "Docker on Debian 9" and 5GiB of RAM.
-Then, run the docker-workarounds salt state https://github.com/OpenDataServices/opendataservices-deploy/pull/100
+Then, run the [docker-workarounds salt state](https://github.com/OpenDataServices/opendataservices-deploy/blob/master/salt/docker-workarounds.sls).
 
 These instructions assume a 1 node swarm, with the manager on the same server.
 
