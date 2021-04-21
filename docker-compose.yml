@@ -55,7 +55,7 @@ services:
     restart: always
 
   declaration_nav:
-    image: opendataservices/open-register-of-interests:latest
+    image: opendataservices/open-register-of-interests:update-requirements
     command: "sh -c '
       ./manage.py migrate &&
       ./manage.py collectstatic --no-input &&
