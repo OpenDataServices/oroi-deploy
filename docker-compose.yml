@@ -11,8 +11,11 @@ services:
       POSTGRES_PASSWORD: datastore
     ports:
       # WARNING this binds to localhost with docker compose,
-      # but on ALL interfaces with docker stack.
-      - "127.0.0.1:5432:5432"
+      # but on ALL interfaces with docker stack,
+      # and because docker changes iptables, ufw CAN'T BE USED to block access to this.
+      # See https://github.com/moby/moby/issues/4737 for a public example,
+      # https://trello.com/c/UH0a1zuw/88-docker-firewall-issues for our internal notes on this
+      # - "127.0.0.1:5432:5432"
 
   memorious-redis:
     image: redis:6.2.1-alpine3.13
